@@ -42,6 +42,8 @@ runpointmodela<-function(climarray, precarray, tme, reqhgt = 0.05, vegp, soilc, 
   pointo<-list()
   for (i in 1:dim(precarray)[1]) {
     for (j in 1:dim(precarray)[2]) {
+      # xiaoyong wu: Printing Processing Progress
+      cat(sprintf("row %s, col %s \n", i, j))
       climdf<-.todf(climarray,i,j,tme)
       prec<-precarray[i,j,]
       if (class(soilm) == "logical") {
@@ -758,7 +760,6 @@ runmicro_biga <- function(climarray, precarray, tme, reqhgt, vegp, soilc, dtm, d
   if (silent == FALSE) cat(paste0("Running model over ",rws*cls," tiles\n"))
   for (rw in 1:rws) {
     for (cl in 1:cls) {
-      
       #' xiaoyong wu: Perhaps we can filter the pixels that need to be calculated based on DTM and PAI, 
       #' as some areas may lack vegetation.
       dtmi<-.croprast(dtm,rw,cl,tilesize)
