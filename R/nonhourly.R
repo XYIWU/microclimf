@@ -163,7 +163,8 @@ modelina <- function(micropointa, vegp, soilc, dtm, dtmc, altcorrect = 0, runche
     weather[[i]]<-onepoint$weather
     precip[[i]]<-onepoint$precip
     if (runchecks) {
-      rc<-checkinputs(weather[[i]],precip[[i]],vegp,soilc,dtmc,FALSE,tstep=onepoint$tstep)
+      #' xiaoyong wu: Maybe it should be "dtm" instead of "dtmc", and typing "dtmc" in the code will result in an error.
+      rc<-checkinputs(weather[[i]],precip[[i]],vegp,soilc,dtm,FALSE,tstep=onepoint$tstep)
       weather[[i]]<-rc$weather
       precip[[i]]<-rc$precip
       vegp<-rc$vegp
@@ -757,16 +758,22 @@ runmicro_biga <- function(climarray, precarray, tme, reqhgt, vegp, soilc, dtm, d
   if (silent == FALSE) cat(paste0("Running model over ",rws*cls," tiles\n"))
   for (rw in 1:rws) {
     for (cl in 1:cls) {
+      
+      #' xiaoyong wu: Perhaps we can filter the pixels that need to be calculated based on DTM and PAI, 
+      #' as some areas may lack vegetation.
       dtmi<-.croprast(dtm,rw,cl,tilesize)
       v<-as.vector(dtmi)
       v<-v[is.na(v)==F]
-      if (length(v)>1) {
+      vegpi<-.vegcrop(vegp,dtmi)
+      g<-as.vector(vegpi$pai) 
+      g<-g[is.na(g)==F]
+      
+      if (length(v)>1 & length(g)>1) {
         slri<-crop(slr,ext(dtmi))
         apri<-crop(apr,ext(dtmi))
         twii<-crop(twi,ext(dtmi))
         hori<-as.array(crop(.rast(hor,dtm),ext(dtmi)))
         wsai<-as.array(crop(.rast(wsa,dtm),ext(dtmi)))
-        vegpi<-.vegcrop(vegp,dtmi)
         soilci<-.soilcrop(soilc,dtmi)
         if (silent==FALSE) cat(paste0("Running model for tile ",rw," ",cl,"\n"))
         if (hourly) {

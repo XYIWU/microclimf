@@ -101,6 +101,10 @@ runpointmodel<-function(weather, precip,  reqhgt = 0.05, vegp, soilc, windhgt = 
   groundparams<-micropoint::groundparams
    w2<-micropoint::weather_hgt(w2,zin=2,uzin=windhgt,zout=zref,ll$lat,ll$long)
   }
+  #' xiaoyong wu: Perhaps it is possible to enforce constraints on the range of w2$relhum values. 
+  #' While studying the microclimate model, I noticed that the range of w2$relhum values may exceed the reasonable range (0~100).
+  w2$relhum[w2$relhum<0]<-0
+  w2$relhum[w2$relhum>100]<-100
   # Set minimum wind speed to avoid convergence issues
   w2$windspeed[w2$windspeed<0.5]<-0.5
   # Run soil moisture model if not provided
